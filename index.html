@@ -18,7 +18,6 @@
     --gold:#b8862f;
     --gold-soft:#e4c78a;
     --line:rgba(16,34,47,0.14);
-    --aqua:#00b4c8;
     --radius:4px;
     --maxw:1120px;
   }
@@ -101,12 +100,26 @@
   .logo-mark{width:20px; height:20px; flex-shrink:0;}
   .nav-links{display:flex; gap:34px; list-style:none; margin:0; padding:0;}
   .nav-links a{
+    position:relative;
     text-decoration:none;
     font-size:14.5px;
     color:var(--ink-soft);
     transition:color .15s ease;
+    padding-bottom:3px;
+  }
+  .nav-links a::after{
+    content:'';
+    position:absolute; left:0; bottom:-1px;
+    width:100%; height:1.5px;
+    background:var(--gold);
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform .25s ease;
   }
   .nav-links a:hover{color:var(--ink);}
+  .nav-links a:hover::after{transform:scaleX(1);}
+  .nav-links a.is-active{color:var(--ink);}
+  .nav-links a.is-active::after{transform:scaleX(1);}
   .nav-cta{
     background:var(--ink);
     color:var(--paper);
@@ -118,24 +131,54 @@
     transition:background .15s ease;
   }
   .nav-cta:hover{background:var(--harbour-deep);}
-  
   .nav-toggle{
     display:none;
+    flex-direction:column;
+    gap:5px;
     background:none;
     border:none;
     cursor:pointer;
     padding:6px;
-    color:var(--ink);
   }
+  .nav-toggle span{
+    width:22px; height:1.5px;
+    background:var(--ink);
+    display:block;
+    transition:transform .25s ease, opacity .25s ease;
+  }
+  .nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+  .nav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0;}
+  .nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+
+  .mobile-menu{
+    display:none;
+    max-height:0;
+    overflow:hidden;
+    background:var(--parchment);
+    border-bottom:1px solid var(--line);
+    transition:max-height .3s ease;
+  }
+  .mobile-menu.is-open{max-height:320px;}
+  .mobile-menu ul{list-style:none; margin:0; padding:18px 32px 22px; display:flex; flex-direction:column; gap:4px;}
+  .mobile-menu a{
+    text-decoration:none; color:var(--ink);
+    font-size:16px; padding:11px 0;
+    border-bottom:1px solid var(--line);
+    font-family:'Fraunces', serif;
+  }
+  .mobile-menu li:last-child a{border-bottom:none;}
 
   /* ===== Hero ===== */
   .hero{
     padding:88px 0 64px;
+  }
+  .hero .wrap{
     display:grid;
     grid-template-columns:1.1fr 0.9fr;
     gap:56px;
     align-items:center;
   }
+  .hero-copy, .hero-visual{min-width:0;}
   .hero h1{
     font-size:clamp(38px, 4.6vw, 58px);
     max-width:11.5ch;
@@ -196,13 +239,44 @@
     text-transform:uppercase;
     color:var(--gold-soft);
   }
+  .rate-tabs{
+    display:flex; gap:6px;
+    margin-top:18px;
+    position:relative; z-index:1;
+    width:100%;
+    min-width:0;
+  }
+  .rate-tab{
+    flex:1 1 0;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    background:rgba(255,252,246,0.08);
+    border:1px solid rgba(255,252,246,0.16);
+    color:rgba(255,252,246,0.68);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:12.5px;
+    font-weight:500;
+    padding:8px 6px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:background .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .rate-tab.is-active{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:var(--ink);
+  }
   .rate-card .rate-number{
     font-family:'Fraunces', serif;
     font-weight:400;
     font-size:64px;
     line-height:1;
     margin:12px 0 4px;
+    transition:opacity .2s ease, transform .2s ease;
   }
+  .rate-card .rate-number.is-swapping{opacity:0; transform:translateY(4px);}
   .rate-card .rate-sub{
     font-size:13.5px;
     color:rgba(255,252,246,0.65);
@@ -224,56 +298,6 @@
   @keyframes pulse{
     0%,100%{opacity:1;}
     50%{opacity:0.35;}
-  }
-
-  /* ===== Interactive Calculator Section ===== */
-  .calc-container {
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 36px;
-    margin-top: 40px;
-    box-shadow: 0 4px 20px rgba(16,34,47,0.04);
-  }
-  .calc-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-  }
-  .slider-group {
-    margin-bottom: 24px;
-  }
-  .slider-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .slider-value {
-    font-family: 'IBM Plex Mono', monospace;
-    color: var(--harbour);
-    font-weight: 600;
-  }
-  input[type=range] {
-    width: 100%;
-    accent-color: var(--harbour);
-    cursor: pointer;
-  }
-  .calc-result-box {
-    background: var(--parchment);
-    border-radius: 6px;
-    padding: 28px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border: 1px solid var(--line);
-  }
-  .calc-amount {
-    font-family: 'Fraunces', serif;
-    font-size: 42px;
-    color: var(--ink);
-    margin: 8px 0;
   }
 
   /* ===== Trust bar ===== */
@@ -322,11 +346,14 @@
   .service-card{
     background:var(--paper);
     padding:34px 28px;
-    transition:background .2s ease, transform .2s ease;
+    transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
+    position:relative;
   }
   .service-card:hover{
     background:#fffefb;
-    transform: translateY(-2px);
+    transform:translateY(-4px);
+    box-shadow:0 16px 32px rgba(16,34,47,0.08);
+    z-index:1;
   }
   .service-card .num{
     font-family:'IBM Plex Mono', monospace;
@@ -381,6 +408,113 @@
   .process-step p{
     font-size:14.5px;
     color:rgba(255,252,246,0.62);
+    margin-top:8px;
+  }
+
+  /* ===== Calculator ===== */
+  .calc-panel{
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:8px;
+    padding:52px 48px;
+    display:grid;
+    grid-template-columns:1fr 0.85fr;
+    gap:56px;
+    align-items:start;
+    position:relative;
+    overflow:hidden;
+  }
+  .calc-panel::before{
+    content:'';
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 8% 92%, rgba(43,99,87,0.35), transparent 55%);
+    pointer-events:none;
+  }
+  .calc-fields{position:relative; z-index:1;}
+  .calc-field{margin-bottom:30px;}
+  .calc-field:last-child{margin-bottom:0;}
+  .calc-field-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:12px;
+  }
+  .calc-field label{
+    font-size:14px; font-weight:500; color:rgba(255,252,246,0.85);
+  }
+  .calc-field .calc-val{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    color:var(--gold-soft);
+  }
+  .calc-field input[type="range"]{
+    -webkit-appearance:none;
+    appearance:none;
+    width:100%;
+    height:3px;
+    border-radius:2px;
+    background:rgba(255,252,246,0.2);
+    outline:none;
+    cursor:pointer;
+  }
+  .calc-field input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:17px; height:17px;
+    border-radius:50%;
+    background:var(--gold);
+    border:2px solid var(--ink);
+    cursor:pointer;
+    transition:transform .15s ease;
+  }
+  .calc-field input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.15);}
+  .calc-field input[type="range"]::-moz-range-thumb{
+    width:17px; height:17px;
+    border-radius:50%;
+    background:var(--gold);
+    border:2px solid var(--ink);
+    cursor:pointer;
+  }
+  .calc-output{
+    position:relative; z-index:1;
+    background:rgba(255,252,246,0.06);
+    border:1px solid rgba(255,252,246,0.14);
+    border-radius:8px;
+    padding:30px 28px;
+  }
+  .calc-output .co-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--gold-soft);
+  }
+  .calc-output .co-number{
+    font-family:'Fraunces', serif;
+    font-size:44px;
+    line-height:1.05;
+    margin:10px 0 4px;
+  }
+  .calc-output .co-sub{
+    font-size:13px;
+    color:rgba(255,252,246,0.6);
+    margin-bottom:22px;
+    padding-bottom:22px;
+    border-bottom:1px solid rgba(255,252,246,0.14);
+  }
+  .calc-output .co-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:13.5px;
+    color:rgba(255,252,246,0.75);
+    margin-top:12px;
+  }
+  .calc-output .co-row strong{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--paper);
+    font-weight:500;
+  }
+  .calc-fine{
+    grid-column:1 / -1;
+    position:relative; z-index:1;
+    font-size:12px;
+    color:rgba(255,252,246,0.45);
     margin-top:8px;
   }
 
@@ -586,130 +720,17 @@
     display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
   }
 
-  /* ===== Interactive NOMI Chat Drawer ===== */
-  #nomi-widget-bubble{
-    position:fixed;
-    bottom:26px; right:26px;
-    z-index:100;
-    width:60px; height:60px;
-    border-radius:50%;
-    background:var(--aqua);
-    border:none;
-    box-shadow:0 8px 24px rgba(0,180,200,0.4);
-    cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    transition:transform .18s ease;
-  }
-  #nomi-widget-bubble:hover{transform:scale(1.06);}
-  #nomi-widget-bubble svg{width:26px; height:26px;}
-  
-  .nomi-chat-modal {
-    position: fixed;
-    bottom: 96px;
-    right: 26px;
-    width: 360px;
-    height: 480px;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    box-shadow: 0 12px 32px rgba(16,34,47,0.18);
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-    pointer-events: none;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-  }
-  .nomi-chat-modal.is-open {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: all;
-  }
-  .nomi-chat-header {
-    background: var(--ink);
-    color: var(--paper);
-    padding: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .nomi-chat-header h4 {
-    margin: 0;
-    font-family: 'Fraunces', serif;
-    font-size: 16px;
-  }
-  .nomi-chat-body {
-    flex: 1;
-    padding: 16px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .chat-msg {
-    max-width: 80%;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 13.5px;
-    line-height: 1.4;
-  }
-  .chat-msg.bot {
-    background: var(--parchment);
-    align-self: flex-start;
-    border-bottom-left-radius: 2px;
-  }
-  .chat-msg.user {
-    background: var(--harbour);
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 2px;
-  }
-  .nomi-chat-input {
-    padding: 12px;
-    border-top: 1px solid var(--line);
-    display: flex;
-    gap: 8px;
-  }
-  .nomi-chat-input input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    font-size: 13px;
-  }
-  .nomi-chat-input button {
-    background: var(--harbour);
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
   /* ===== Reveal on scroll ===== */
   .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease;}
   .reveal.is-visible{opacity:1; transform:translateY(0);}
 
   /* ===== Responsive ===== */
   @media (max-width: 880px){
-    .nav-links{
-      display:none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: var(--parchment);
-      flex-direction: column;
-      padding: 20px;
-      gap: 16px;
-      border-bottom: 1px solid var(--line);
-    }
-    .nav-links.is-active { display: flex; }
-    .nav-toggle { display: block; }
-    .hero{grid-template-columns:1fr; padding-top:48px;}
-    .calc-grid{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+    .nav-toggle{display:flex;}
+    .mobile-menu{display:block;}
+    .hero .wrap{grid-template-columns:1fr;}
+    .hero{padding-top:48px;}
     .services-grid{grid-template-columns:1fr;}
     .process-steps{grid-template-columns:1fr 1fr; row-gap:36px;}
     .why-grid{grid-template-columns:1fr; gap:40px;}
@@ -723,7 +744,6 @@
     .process{padding:40px 24px;}
     .process-steps{grid-template-columns:1fr;}
     .rate-card .rate-number{font-size:50px;}
-    .nomi-chat-modal { right: 10px; left: 10px; width: auto; }
   }
 </style>
 </head>
@@ -741,43 +761,56 @@
       </svg>
       Anchor Point
     </div>
-    <ul class="nav-links" id="mobileNav">
-      <li><a href="#calculator">Calculator</a></li>
+    <ul class="nav-links">
       <li><a href="#services">Loans</a></li>
+      <li><a href="#calculator">Calculator</a></li>
       <li><a href="#process">How it works</a></li>
       <li><a href="#why">Why us</a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
-    <div style="display:flex; gap:12px; align-items:center;">
-      <a href="#contact" class="nav-cta">Book a call</a>
-      <button class="nav-toggle" id="menuToggle" aria-label="Toggle navigation">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
-    </div>
+    <a href="#contact" class="nav-cta">Book a call</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="#services">Loans</a></li>
+      <li><a href="#calculator">Calculator</a></li>
+      <li><a href="#process">How it works</a></li>
+      <li><a href="#why">Why us</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </div>
 </header>
 
 <main>
   <section class="hero">
-    <div class="wrap" style="display:contents;">
-      <div>
+    <div class="wrap">
+      <div class="hero-copy">
         <p class="eyebrow">Sydney &middot; Mortgage Broking</p>
         <h1>Home loans, <em>explained plainly.</em></h1>
         <p class="lead">We compare over 40 Australian lenders to find a loan that fits your life, not the other way round. No jargon, no pressure, no fee to you.</p>
         <div class="hero-actions">
-          <a href="#calculator" class="btn btn-primary">Calculate repayments</a>
+          <a href="#calculator" class="btn btn-primary">Check what you could borrow</a>
           <a href="#process" class="btn btn-ghost">See how it works</a>
         </div>
         <p class="hero-fine">Credit Representative 000000 of Anchor Point Finance Pty Ltd, Australian Credit Licence 000000</p>
       </div>
-      <div>
-        <div class="rate-card">
+      <div class="hero-visual">
+        <div class="rate-card" id="rateCard">
           <span class="rate-label">Today's featured rate</span>
-          <div class="rate-number">5.86%</div>
-          <div class="rate-sub">p.a. variable, comparison rate 5.94% p.a.* Owner-occupier, principal and interest.</div>
-          <svg class="anchor-line" viewBox="0 0 320 60" preserveAspectRatio="none">
+          <div class="rate-number" id="rateNumber">5.86%</div>
+          <div class="rate-sub" id="rateSub">p.a. variable, comparison rate 5.94% p.a.* Owner-occupier, principal and interest.</div>
+          <div class="rate-tabs" role="group" aria-label="Loan purpose">
+            <button type="button" class="rate-tab is-active" data-purpose="owner">Owner-occupier</button>
+            <button type="button" class="rate-tab" data-purpose="investor">Investor</button>
+          </div>
+          <div class="rate-tabs" role="group" aria-label="Rate type" style="margin-top:8px;">
+            <button type="button" class="rate-tab is-active" data-type="variable">Variable</button>
+            <button type="button" class="rate-tab" data-type="fixed">Fixed (3yr)</button>
+          </div>
+          <svg class="anchor-line" viewBox="0 0 320 60" preserveAspectRatio="none" style="margin-top:20px;">
             <path d="M0 40 C 40 42, 60 20, 100 24 S 160 46, 200 30 S 260 10, 320 16" />
             <circle cx="320" cy="16" r="3.5"/>
           </svg>
@@ -789,58 +822,52 @@
 
   <div class="trust-bar">
     <div class="wrap">
-      <span class="trust-item"><strong>40+</strong> lenders on our panel</span>
+      <span class="trust-item"><strong class="count-up" data-count="40" data-suffix="+">0</strong> lenders on our panel</span>
       <span class="trust-item"><strong>MFAA</strong> accredited broker</span>
       <span class="trust-item"><strong>$0</strong> broker fee to borrowers</span>
-      <span class="trust-item"><strong>1,200+</strong> Sydney homeowners settled since 2019</span>
+      <span class="trust-item"><strong class="count-up" data-count="1200" data-suffix="+">0</strong> Sydney homeowners settled since 2019</span>
     </div>
   </div>
 
-  <!-- Interactive Calculator Section -->
   <section id="calculator">
     <div class="wrap">
       <div class="section-head reveal">
-        <p class="eyebrow">Interactive Estimator</p>
-        <h2>Estimate your monthly repayments.</h2>
-        <p>Adjust the loan details below to see instant estimates tailored to current market rates.</p>
+        <p class="eyebrow">Try it yourself</p>
+        <h2>See what you could borrow, roughly.</h2>
+        <p>Move the sliders to match your situation. This is a ballpark, your broker will run the real numbers against our lender panel.</p>
       </div>
-      <div class="calc-container reveal">
-        <div class="calc-grid">
-          <div>
-            <div class="slider-group">
-              <div class="slider-header">
-                <span>Loan Amount</span>
-                <span class="slider-value" id="loanVal">$600,000</span>
-              </div>
-              <input type="range" id="loanRange" min="100000" max="2500000" step="25000" value="600000">
+      <div class="calc-panel reveal">
+        <div class="calc-fields">
+          <div class="calc-field">
+            <div class="calc-field-head">
+              <label for="incomeRange">Annual household income</label>
+              <span class="calc-val" id="incomeVal">$120,000</span>
             </div>
-            
-            <div class="slider-group">
-              <div class="slider-header">
-                <span>Interest Rate (p.a.)</span>
-                <span class="slider-value" id="rateVal">5.86%</span>
-              </div>
-              <input type="range" id="rateRange" min="4.0" max="9.0" step="0.05" value="5.86">
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-header">
-                <span>Loan Term</span>
-                <span class="slider-value" id="termVal">30 Years</span>
-              </div>
-              <input type="range" id="termRange" min="5" max="30" step="5" value="30">
-            </div>
+            <input type="range" id="incomeRange" min="40000" max="300000" step="5000" value="120000">
           </div>
-
-          <div class="calc-result-box">
-            <span class="eyebrow" style="margin-bottom:8px;">Estimated Monthly Repayment</span>
-            <div class="calc-amount" id="monthlyRepayment">$3,542</div>
-            <p style="font-size:13.5px; color:var(--ink-soft); margin-top:8px;">
-              Total interest over term: <strong id="totalInterest" style="color:var(--ink);">$675,120</strong>
-            </p>
-            <a href="#contact" class="btn btn-primary" style="margin-top:20px; text-align:center; justify-content:center;">Lock In This Rate</a>
+          <div class="calc-field">
+            <div class="calc-field-head">
+              <label for="expensesRange">Monthly expenses &amp; existing debts</label>
+              <span class="calc-val" id="expensesVal">$1,500</span>
+            </div>
+            <input type="range" id="expensesRange" min="0" max="5000" step="100" value="1500">
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-head">
+              <label for="depositRange">Deposit saved</label>
+              <span class="calc-val" id="depositVal">$80,000</span>
+            </div>
+            <input type="range" id="depositRange" min="10000" max="300000" step="5000" value="80000">
           </div>
         </div>
+        <div class="calc-output">
+          <span class="co-label">Estimated borrowing power</span>
+          <div class="co-number" id="co-borrow">$0</div>
+          <div class="co-sub" id="co-purchase">Estimated purchase price: $0</div>
+          <div class="co-row"><span>Rate used</span><strong id="co-rate">5.86% p.a.</strong></div>
+          <div class="co-row"><span>Est. monthly repayment</span><strong id="co-repay">$0 / mo</strong></div>
+        </div>
+        <p class="calc-fine">Illustrative only, based on a simplified serviceability model over a 30-year term. Your actual borrowing power depends on the lender, your full financial position and current lending standards. Not a loan quote or pre-approval.</p>
       </div>
     </div>
   </section>
@@ -989,7 +1016,7 @@
           <div class="cs-item"><span class="cs-label">Email</span>hello@anchorpointloans.com.au</div>
           <div class="cs-item"><span class="cs-label">Hours</span>Mon to Fri, 8.30am to 6pm AEST</div>
         </div>
-        <form class="contact-form" id="leadForm">
+        <form class="contact-form" onsubmit="event.preventDefault(); this.querySelector('.btn-primary').textContent='Request sent';">
           <div class="form-row">
             <div class="field">
               <label for="fname">First name</label>
@@ -1031,7 +1058,7 @@
             <input type="checkbox" id="marketing">
             <label for="marketing">I'd like to receive rate updates and home loan tips by email.</label>
           </div>
-          <button type="submit" class="btn btn-primary" id="submitBtn">Request a call back</button>
+          <button type="submit" class="btn btn-primary">Request a call back</button>
         </form>
       </div>
     </div>
@@ -1070,29 +1097,8 @@
   </div>
 </footer>
 
-<!-- Interactive NOMI Assistant Floating Drawer -->
-<button id="nomi-widget-bubble" aria-label="Chat with NOMI Assistant">
-  <svg viewBox="0 0 24 24" fill="none">
-    <path d="M4 5h16v11H8l-4 4V5z" stroke="#10222f" stroke-width="1.6" stroke-linejoin="round"/>
-  </svg>
-</button>
-
-<div class="nomi-chat-modal" id="nomiChat">
-  <div class="nomi-chat-header">
-    <h4>NOMI Assistant</h4>
-    <button id="closeNomi" style="background:none; border:none; color:white; cursor:pointer;">&times;</button>
-  </div>
-  <div class="nomi-chat-body" id="nomiMessages">
-    <div class="chat-msg bot">G'day! I'm NOMI, your home loan assistant. How can I help you today?</div>
-  </div>
-  <form class="nomi-chat-input" id="nomiForm">
-    <input type="text" id="nomiInput" placeholder="Ask a question..." required>
-    <button type="submit">Send</button>
-  </form>
-</div>
-
 <script>
-  // Reveal-on-scroll
+  // ----- Reveal-on-scroll -----
   const revealEls = document.querySelectorAll('.reveal');
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{
@@ -1101,103 +1107,152 @@
   }, {threshold:0.12});
   revealEls.forEach(el=>io.observe(el));
 
-  // Mobile Menu Toggle
-  const menuToggle = document.getElementById('menuToggle');
-  const mobileNav = document.getElementById('mobileNav');
-  menuToggle.addEventListener('click', () => {
-    mobileNav.classList.toggle('is-active');
+  // ----- Mobile nav toggle -----
+  const navToggle = document.getElementById('navToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  navToggle.addEventListener('click', ()=>{
+    const isOpen = mobileMenu.classList.toggle('is-open');
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  mobileMenu.querySelectorAll('a').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      mobileMenu.classList.remove('is-open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
   });
 
-  // Mortgage Calculator Logic
-  const loanRange = document.getElementById('loanRange');
-  const rateRange = document.getElementById('rateRange');
-  const termRange = document.getElementById('termRange');
-  
-  const loanVal = document.getElementById('loanVal');
-  const rateVal = document.getElementById('rateVal');
-  const termVal = document.getElementById('termVal');
-  
-  const monthlyRepayment = document.getElementById('monthlyRepayment');
-  const totalInterest = document.getElementById('totalInterest');
+  // ----- Scrollspy for nav links -----
+  const navLinkEls = document.querySelectorAll('.nav-links a');
+  const spyIO = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const id = entry.target.getAttribute('id');
+        navLinkEls.forEach(a=>{
+          a.classList.toggle('is-active', a.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px', threshold:0});
+  document.querySelectorAll('section[id]').forEach(s=>spyIO.observe(s));
 
-  function calculateMortgage() {
-    const P = parseFloat(loanRange.value);
-    const annualRate = parseFloat(rateRange.value) / 100;
-    const r = annualRate / 12;
-    const n = parseInt(termRange.value) * 12;
+  // ----- Count-up stats -----
+  const countEls = document.querySelectorAll('.count-up');
+  const countIO = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseInt(el.dataset.count, 10);
+      const suffix = el.dataset.suffix || '';
+      const duration = 1100;
+      const start = performance.now();
+      function tick(now){
+        const p = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const val = Math.round(target * eased);
+        el.textContent = val.toLocaleString('en-AU') + suffix;
+        if(p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+      countIO.unobserve(el);
+    });
+  }, {threshold:0.5});
+  countEls.forEach(el=>countIO.observe(el));
 
-    loanVal.textContent = '$' + P.toLocaleString('en-AU');
-    rateVal.textContent = rateRange.value + '%';
-    termVal.textContent = termRange.value + ' Years';
+  // ----- Rate card tabs -----
+  const rates = {
+    'owner-variable':  {rate:5.86, comp:5.94, label:'variable', purpose:'Owner-occupier, principal and interest.'},
+    'owner-fixed':     {rate:5.69, comp:6.02, label:'fixed (3yr)', purpose:'Owner-occupier, principal and interest.'},
+    'investor-variable':{rate:6.24, comp:6.31, label:'variable', purpose:'Investor, principal and interest.'},
+    'investor-fixed':  {rate:6.09, comp:6.38, label:'fixed (3yr)', purpose:'Investor, principal and interest.'}
+  };
+  let purpose = 'owner', rateType = 'variable';
+  const rateNumberEl = document.getElementById('rateNumber');
+  const rateSubEl = document.getElementById('rateSub');
+  const coRateEl = document.getElementById('co-rate');
+  let currentRate = 5.86;
 
-    const monthly = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-    const total = monthly * n;
-    const interest = total - P;
-
-    monthlyRepayment.textContent = '$' + Math.round(monthly).toLocaleString('en-AU');
-    totalInterest.textContent = '$' + Math.round(interest).toLocaleString('en-AU');
+  function renderRate(){
+    const key = purpose + '-' + rateType;
+    const data = rates[key];
+    currentRate = data.rate;
+    rateNumberEl.classList.add('is-swapping');
+    setTimeout(()=>{
+      rateNumberEl.textContent = data.rate.toFixed(2) + '%';
+      rateSubEl.textContent = 'p.a. ' + data.label + ', comparison rate ' + data.comp.toFixed(2) + '% p.a.* ' + data.purpose;
+      coRateEl.textContent = data.rate.toFixed(2) + '% p.a.';
+      rateNumberEl.classList.remove('is-swapping');
+      updateCalculator();
+    }, 160);
   }
 
-  [loanRange, rateRange, termRange].forEach(input => {
-    input.addEventListener('input', calculateMortgage);
+  document.querySelectorAll('[data-purpose]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('[data-purpose]').forEach(b=>b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      purpose = btn.dataset.purpose;
+      renderRate();
+    });
   });
-  calculateMortgage();
-
-  // Contact Form Feedback
-  document.getElementById('leadForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    btn.textContent = 'Request Sent!';
-    btn.style.background = 'var(--harbour)';
-    btn.style.color = '#fff';
-    setTimeout(() => {
-      btn.textContent = 'Request a call back';
-      btn.style.background = 'var(--gold)';
-      btn.style.color = 'var(--ink)';
-      e.target.reset();
-    }, 3000);
+  document.querySelectorAll('[data-type]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('[data-type]').forEach(b=>b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      rateType = btn.dataset.type;
+      renderRate();
+    });
   });
 
-  // NOMI Chat Drawer Interactions
-  const nomiBubble = document.getElementById('nomi-widget-bubble');
-  const nomiChat = document.getElementById('nomiChat');
-  const closeNomi = document.getElementById('closeNomi');
-  const nomiForm = document.getElementById('nomiForm');
-  const nomiInput = document.getElementById('nomiInput');
-  const nomiMessages = document.getElementById('nomiMessages');
+  // ----- Borrowing power calculator -----
+  const incomeRange = document.getElementById('incomeRange');
+  const expensesRange = document.getElementById('expensesRange');
+  const depositRange = document.getElementById('depositRange');
+  const incomeVal = document.getElementById('incomeVal');
+  const expensesVal = document.getElementById('expensesVal');
+  const depositVal = document.getElementById('depositVal');
+  const coBorrow = document.getElementById('co-borrow');
+  const coPurchase = document.getElementById('co-purchase');
+  const coRepay = document.getElementById('co-repay');
 
-  nomiBubble.addEventListener('click', () => {
-    nomiChat.classList.toggle('is-open');
+  function money(n){
+    return '$' + Math.round(n).toLocaleString('en-AU');
+  }
+
+  function updateCalculator(){
+    const income = parseInt(incomeRange.value, 10);
+    const expenses = parseInt(expensesRange.value, 10);
+    const deposit = parseInt(depositRange.value, 10);
+
+    incomeVal.textContent = money(income);
+    expensesVal.textContent = money(expenses);
+    depositVal.textContent = money(deposit);
+
+    // Simplified serviceability model: net monthly capacity after tax estimate and expenses,
+    // stress-tested at rate + 3%, amortised over 30 years.
+    const netMonthlyIncome = (income * 0.7) / 12;
+    const availableForRepayments = Math.max(0, netMonthlyIncome * 0.35 - expenses * 0.4);
+    const stressRate = (currentRate + 3) / 100 / 12;
+    const n = 360;
+    let borrowing = 0;
+    if(availableForRepayments > 0){
+      borrowing = availableForRepayments * (1 - Math.pow(1 + stressRate, -n)) / stressRate;
+    }
+    borrowing = Math.max(0, Math.round(borrowing / 5000) * 5000);
+    const purchasePrice = borrowing + deposit;
+
+    const actualMonthlyRate = currentRate / 100 / 12;
+    const monthlyRepayment = borrowing > 0
+      ? borrowing * actualMonthlyRate / (1 - Math.pow(1 + actualMonthlyRate, -n))
+      : 0;
+
+    coBorrow.textContent = money(borrowing);
+    coPurchase.textContent = 'Estimated purchase price: ' + money(purchasePrice);
+    coRepay.textContent = money(monthlyRepayment) + ' / mo';
+  }
+
+  [incomeRange, expensesRange, depositRange].forEach(el=>{
+    el.addEventListener('input', updateCalculator);
   });
-
-  closeNomi.addEventListener('click', () => {
-    nomiChat.classList.remove('is-open');
-  });
-
-  nomiForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const text = nomiInput.value.trim();
-    if (!text) return;
-
-    // Append user message
-    const userMsg = document.createElement('div');
-    userMsg.className = 'chat-msg user';
-    userMsg.textContent = text;
-    nomiMessages.appendChild(userMsg);
-    nomiInput.value = '';
-
-    // Scroll to bottom
-    nomiMessages.scrollTop = nomiMessages.scrollHeight;
-
-    // Simulate Bot response
-    setTimeout(() => {
-      const botMsg = document.createElement('div');
-      botMsg.className = 'chat-msg bot';
-      botMsg.textContent = "Thanks for asking! Our brokers are available to discuss loan structures and rates directly with you.";
-      nomiMessages.appendChild(botMsg);
-      nomiMessages.scrollTop = nomiMessages.scrollHeight;
-    }, 800);
-  });
+  updateCalculator();
 </script>
 
 </body>
